@@ -8,9 +8,41 @@ import {
 } from '@testing-library/react-native';
 import MockAdapter from 'axios-mock-adapter';
 
+import AsyncStorage from '@react-native-community/async-storage';
 import api from '../../src/services/api';
 import CardAcademia from '../../src/components/CardAcademia';
 
+const mockReturnValues = {
+  activitiesCheckin: JSON.stringify([
+    {
+      id: 0,
+      title: 'Musculação + Aulas',
+      gymId: 285079,
+    },
+  ]),
+};
+
+jest.mock('@react-native-community/async-storage', () => ({
+  setItem: jest.fn(() => {
+    return new Promise(resolve => {
+      resolve(null);
+    });
+  }),
+  getItem: jest.fn(key => {
+    return new Promise(resolve => {
+      if (mockReturnValues[key]) {
+        resolve(mockReturnValues[key]);
+      } else {
+        resolve(null);
+      }
+    });
+  }),
+  removeItem: jest.fn(() => {
+    return new Promise(resolve => {
+      resolve(null);
+    });
+  }),
+}));
 const academia = {
   id: 285079,
   title: 'Academia Bluefit - Vila Olímpia',
@@ -35,6 +67,7 @@ const academia = {
 };
 const apiMock = new MockAdapter(api);
 const check = require('../../src/assets/check.png');
+const notCheck = require('../../src/assets/not-check.png');
 
 afterEach(cleanup);
 
@@ -75,6 +108,39 @@ describe('CardAcademia', () => {
       getByTestId('icon Musculação + Aulas')
     );
 
+    const value = {
+      id: 0,
+      title: 'Musculação + Aulas',
+      gymId: 285079,
+    };
+
     expect(props.source).toEqual(check);
+    expect(AsyncStorage.getItem).toBeCalledWith('activitiesCheckin');
+    expect(AsyncStorage.setItem).toBeCalledWith(
+      'activitiesCheckin',
+      JSON.stringify([...JSON.parse(mockReturnValues.activitiesCheckin), value])
+    );
+  });
+
+  it('Remove checkin activity', async () => {
+    academia.activities[0].check = true;
+    const { getByTestId } = render(
+      <CardAcademia {...academia} handleScroll={jest.fn()} />
+    );
+
+    fireEvent.press(getByTestId('card-academia'));
+
+    fireEvent.press(getByTestId('card Musculação + Aulas'));
+
+    const { props } = await waitForElement(() =>
+      getByTestId('icon Musculação + Aulas')
+    );
+
+    expect(props.source).toEqual(notCheck);
+    expect(AsyncStorage.getItem).toBeCalledWith('activitiesCheckin');
+    expect(AsyncStorage.setItem).toBeCalledWith(
+      'activitiesCheckin',
+      JSON.stringify([])
+    );
   });
 });

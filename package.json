@@ -48,6 +48,9 @@
     "testMatch": [
       "**/__tests__/**/*.test.js"
     ],
-    "coverageDirectory": "__tests__/coverage"
+    "coverageDirectory": "__tests__/coverage",
+    "transformIgnorePatterns": [
+      "node_modules/(?!(@react-native-community|react-native|react-native-vector-icons)/)"
+    ]
   }
 }

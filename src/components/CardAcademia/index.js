@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Icon from 'react-native-vector-icons/Feather';
 import PropTypes from 'prop-types';
 import { Dimensions } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import {
   Container,
   Avatar,
@@ -43,26 +44,55 @@ class CardAcademia extends Component {
     handleScroll(!moreInfo);
   };
 
-  handleCheckin = async (checkin, gymId, activityId) => {
+  handleCheckout = async (gymId, activityId) => {
     const { activities } = this.state;
-    if (checkin) {
-      await api.post('checkin', {
-        gymId,
-        activityId,
-      });
-      const index = activities.findIndex(
-        activity => activity.id === activityId
-      );
-      activities[index].checkin = true;
+    const index = activities.findIndex(activity => activity.id === activityId);
+    activities[index].gymId = gymId;
+    activities[index].checkin = false;
 
-      this.setState({ activities: [...activities] });
-    }
+    const activitiesCheckin = JSON.parse(
+      await AsyncStorage.getItem('activitiesCheckin')
+    );
+
+    const indexCheckin = activitiesCheckin.findIndex(
+      activity => activity.id === activityId
+    );
+
+    activitiesCheckin.splice(indexCheckin, 1);
+
+    await AsyncStorage.setItem(
+      'activitiesCheckin',
+      JSON.stringify(activitiesCheckin)
+    );
+    this.setState({ activities: [...activities] });
+  };
+
+  handleCheckin = async (gymId, activityId) => {
+    const { activities } = this.state;
+    const index = activities.findIndex(activity => activity.id === activityId);
+    await api.post('checkin', {
+      gymId,
+      activityId,
+    });
+
+    activities[index].gymId = gymId;
+
+    let activitiesCheckin = JSON.parse(
+      await AsyncStorage.getItem('activitiesCheckin')
+    );
+    activitiesCheckin = activitiesCheckin || [];
+    await AsyncStorage.setItem(
+      'activitiesCheckin',
+      JSON.stringify([...activitiesCheckin, activities[index]])
+    );
+
+    activities[index].checkin = true;
+    this.setState({ activities: [...activities] });
   };
 
   render() {
     const { title, address, rating, logo, id } = this.props;
     const { moreInfo, activities } = this.state;
-    // console.log(activities);
     return (
       <Container
         onPress={() => this.handleMoreInfo(true)}
@@ -99,7 +129,9 @@ class CardAcademia extends Component {
                 <CardActivity
                   key={activity.id}
                   onPress={() =>
-                    this.handleCheckin(!activity.checkin, id, activity.id)
+                    !activity.checkin
+                      ? this.handleCheckin(id, activity.id)
+                      : this.handleCheckout(id, activity.id)
                   }
                   testID={`card ${activity.title}`}
                 >
