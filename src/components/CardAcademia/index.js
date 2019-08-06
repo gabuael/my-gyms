@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import Icon from 'react-native-vector-icons/Feather';
 import PropTypes from 'prop-types';
-
-import { Text } from 'react-native';
+import { Dimensions } from 'react-native';
 import {
   Container,
   Avatar,
@@ -15,14 +14,25 @@ import {
   RatingText,
   GymInfos,
   GymMoreInfos,
+  CardActivity,
+  Activity,
   ListActivities,
+  ButtonX,
 } from './styles';
 
 const check = require('../../assets/check.png');
 
+const { width } = Dimensions.get('window');
+
 class CardAcademia extends Component {
   state = {
     moreInfo: false,
+  };
+
+  handleMoreInfo = moreInfo => {
+    const { handleScroll } = this.props;
+    this.setState({ moreInfo });
+    handleScroll(!moreInfo);
   };
 
   render() {
@@ -30,8 +40,10 @@ class CardAcademia extends Component {
     const { moreInfo } = this.state;
     return (
       <Container
-        onPress={() => this.setState({ moreInfo: !moreInfo })}
+        onPress={() => this.handleMoreInfo(true)}
         testID="card-academia"
+        style={{ width: Math.round(width * 0.9) }}
+        disabled={moreInfo}
       >
         <GymInfos>
           <Avatar source={{ url: logo }} />
@@ -40,21 +52,35 @@ class CardAcademia extends Component {
             <Address>{address}</Address>
           </Infos>
           <Left>
-            <IconCheckin source={check} />
-            <Rating>
-              <RatingText>{rating}</RatingText>
-              <Icon name="star" size={16} color="#0094FF" />
-            </Rating>
+            {!moreInfo ? (
+              <IconCheckin source={check} />
+            ) : (
+              <ButtonX onPress={() => this.handleMoreInfo(false)}>
+                <Icon name="x" size={20} color="#0094FF" />
+              </ButtonX>
+            )}
+            {!moreInfo && (
+              <Rating>
+                <RatingText>{rating}</RatingText>
+                <Icon name="star" size={16} color="#0094FF" />
+              </Rating>
+            )}
           </Left>
         </GymInfos>
         {moreInfo && (
           <GymMoreInfos>
-            <ListActivities
-              data={activities}
-              keyExtractor={activity => String(activity.id)}
-              renderItem={({ item }) => <Text>{item.title}</Text>}
-              horizontal
-            />
+            <ListActivities horizontal>
+              {activities.map(activity => (
+                <CardActivity key={activity.id}>
+                  <Activity>{activity.title}</Activity>
+                  <IconCheckin source={check} />
+                </CardActivity>
+              ))}
+            </ListActivities>
+            <Rating>
+              <RatingText>{rating}</RatingText>
+              <Icon name="star" size={16} color="#0094FF" />
+            </Rating>
           </GymMoreInfos>
         )}
       </Container>
@@ -68,6 +94,7 @@ CardAcademia.propTypes = {
   rating: PropTypes.number.isRequired,
   logo: PropTypes.string.isRequired,
   activities: PropTypes.array.isRequired,
+  handleScroll: PropTypes.func.isRequired,
 };
 
 export default CardAcademia;

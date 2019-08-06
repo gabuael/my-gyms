@@ -48,6 +48,7 @@ export const IconCheckin = styled.Image`
 export const Rating = styled.View`
   flex-direction: row;
   align-items: center;
+  justify-content: flex-end;
 `;
 export const RatingText = styled.Text`
   font-size: 13px;
@@ -57,6 +58,7 @@ export const RatingText = styled.Text`
 `;
 export const GymInfos = styled.View`
   flex-direction: row;
+  justify-content: space-between;
 `;
 
 export const GymMoreInfos = styled.View`
@@ -64,4 +66,31 @@ export const GymMoreInfos = styled.View`
   margin-bottom: 40px;
 `;
 
-export const ListActivities = styled.FlatList``;
+export const ListActivities = styled.ScrollView`
+  margin: 8px;
+  margin-bottom: 6px;
+`;
+
+export const CardActivity = styled.View`
+  background: #fff;
+  border-radius: 10px;
+  shadow-opacity: 0.05;
+  shadow-radius: 5px;
+  shadow-color: #000;
+  shadow-offset: 0px 3px;
+  padding: 15px;
+  margin: 8px;
+  flex-direction: row;
+`;
+
+export const Activity = styled.Text.attrs({
+  numberOfLines: 2,
+})`
+  font-size: 17px;
+  color: #4f4f4f;
+  font-weight: 500;
+  margin-right: 25px;
+  width: 95px;
+`;
+
+export const ButtonX = styled.TouchableOpacity``;
