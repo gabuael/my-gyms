@@ -29,10 +29,23 @@ const academia = {
 
 describe('CardAcademia', () => {
   it('Render activities', () => {
-    const { getByTestId, getByText } = render(<CardAcademia {...academia} />);
+    const { getByTestId, getByText } = render(
+      <CardAcademia {...academia} handleScroll={jest.fn()} />
+    );
 
     fireEvent.press(getByTestId('card-academia'));
 
     expect(getByText('Musculação + Aulas')).toBeTruthy();
+  });
+
+  it('Close activities', () => {
+    const { getByTestId } = render(
+      <CardAcademia {...academia} handleScroll={jest.fn()} />
+    );
+
+    fireEvent.press(getByTestId('card-academia'));
+    fireEvent.press(getByTestId('x'));
+
+    expect(getByTestId('rating')).toBeTruthy();
   });
 });

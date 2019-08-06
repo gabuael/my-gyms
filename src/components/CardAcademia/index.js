@@ -55,12 +55,12 @@ class CardAcademia extends Component {
             {!moreInfo ? (
               <IconCheckin source={check} />
             ) : (
-              <ButtonX onPress={() => this.handleMoreInfo(false)}>
+              <ButtonX onPress={() => this.handleMoreInfo(false)} testID="x">
                 <Icon name="x" size={20} color="#0094FF" />
               </ButtonX>
             )}
             {!moreInfo && (
-              <Rating>
+              <Rating testID="rating">
                 <RatingText>{rating}</RatingText>
                 <Icon name="star" size={16} color="#0094FF" />
               </Rating>
