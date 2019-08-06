@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { render } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import MockAdapter from 'axios-mock-adapter';
 
 import api from '../../src/services/api';
@@ -41,5 +41,27 @@ describe('Home', () => {
     await api.get('gyms');
 
     expect(getByText('Academia Bluefit - Vila Olímpia')).toBeTruthy();
+  });
+
+  it('Disable scroll', async () => {
+    const { getByTestId } = render(<Home />);
+
+    fireEvent.press(getByTestId('card-academia'));
+
+    const { props } = getByTestId('scroll');
+
+    expect(props.scrollEnabled).toEqual(true);
+  });
+
+  it('Enable scroll', async () => {
+    const { getByTestId } = render(<Home />);
+
+    fireEvent.press(getByTestId('card-academia'));
+
+    fireEvent.press(getByTestId('x'));
+
+    const { props } = getByTestId('scroll');
+
+    expect(props.scrollEnabled).toEqual(true);
   });
 });

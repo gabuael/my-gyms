@@ -19,6 +19,7 @@ import {
   Activity,
   ListActivities,
   ButtonX,
+  Right,
 } from './styles';
 import api from '../../services/api';
 
@@ -101,12 +102,14 @@ class CardAcademia extends Component {
         disabled={moreInfo}
       >
         <GymInfos>
-          <Avatar source={{ url: logo }} />
-          <Infos>
-            <Title>{title}</Title>
-            <Address>{address}</Address>
-          </Infos>
           <Left>
+            <Avatar source={{ url: logo }} />
+            <Infos>
+              <Title>{title}</Title>
+              <Address>{address}</Address>
+            </Infos>
+          </Left>
+          <Right>
             {!moreInfo ? (
               <IconCheckin source={check} />
             ) : (
@@ -120,7 +123,7 @@ class CardAcademia extends Component {
                 <Icon name="star" size={16} color="#0094FF" />
               </Rating>
             )}
-          </Left>
+          </Right>
         </GymInfos>
         {moreInfo && (
           <GymMoreInfos>

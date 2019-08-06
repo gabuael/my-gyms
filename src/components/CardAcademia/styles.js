@@ -12,6 +12,14 @@ export const Container = styled.TouchableOpacity`
   margin-right: 20px;
 `;
 
+export const GymInfos = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+export const Left = styled.View`
+  flex-direction: row;
+`;
 export const Avatar = styled.Image`
   width: 65px;
   height: 65px;
@@ -20,7 +28,7 @@ export const Avatar = styled.Image`
 `;
 export const Infos = styled.View`
   margin-right: 20px;
-  max-width: 170px;
+  max-width: 160px;
 `;
 export const Title = styled.Text.attrs({
   numberOfLines: 2,
@@ -37,7 +45,7 @@ export const Address = styled.Text.attrs({
   color: #888888;
   font-weight: bold;
 `;
-export const Left = styled.View`
+export const Right = styled.View`
   justify-content: space-between;
   align-items: flex-end;
 `;
@@ -55,10 +63,6 @@ export const RatingText = styled.Text`
   color: #0094ff;
   font-weight: bold;
   margin-right: 2px;
-`;
-export const GymInfos = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
 `;
 
 export const GymMoreInfos = styled.View`
@@ -93,4 +97,6 @@ export const Activity = styled.Text.attrs({
   width: 95px;
 `;
 
-export const ButtonX = styled.TouchableOpacity``;
+export const ButtonX = styled.TouchableOpacity.attrs({
+  hitSlop: { top: 20, bottom: 20, left: 20, right: 20 },
+})``;
