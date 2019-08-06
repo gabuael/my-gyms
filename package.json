@@ -9,6 +9,7 @@
     "coverage": "jest --coverage --watchAll=false"
   },
   "dependencies": {
+    "@react-native-community/async-storage": "^1.6.1",
     "axios": "^0.19.0",
     "prop-types": "^15.7.2",
     "react": "16.8.6",

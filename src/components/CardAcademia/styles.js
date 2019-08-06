@@ -71,7 +71,7 @@ export const ListActivities = styled.ScrollView`
   margin-bottom: 6px;
 `;
 
-export const CardActivity = styled.View`
+export const CardActivity = styled.TouchableOpacity`
   background: #fff;
   border-radius: 10px;
   shadow-opacity: 0.05;

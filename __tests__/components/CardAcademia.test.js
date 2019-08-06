@@ -1,7 +1,14 @@
 import React from 'react';
 
-import { render, fireEvent } from '@testing-library/react-native';
+import {
+  render,
+  fireEvent,
+  waitForElement,
+  cleanup,
+} from '@testing-library/react-native';
+import MockAdapter from 'axios-mock-adapter';
 
+import api from '../../src/services/api';
 import CardAcademia from '../../src/components/CardAcademia';
 
 const academia = {
@@ -11,11 +18,11 @@ const academia = {
     'https://gympass-staging-images-us.s3.amazonaws.com/image/filename/426232/logo_logo-01.jpg',
   activities: [
     {
-      id: 156106,
+      id: 0,
       title: 'Musculação + Aulas',
     },
     {
-      id: 3273872,
+      id: 1,
       title: 'Aulas',
     },
   ],
@@ -26,6 +33,10 @@ const academia = {
     longitude: -46.6851913,
   },
 };
+const apiMock = new MockAdapter(api);
+const check = require('../../src/assets/check.png');
+
+afterEach(cleanup);
 
 describe('CardAcademia', () => {
   it('Render activities', () => {
@@ -47,5 +58,23 @@ describe('CardAcademia', () => {
     fireEvent.press(getByTestId('x'));
 
     expect(getByTestId('rating')).toBeTruthy();
+  });
+
+  it('Checkin activity', async () => {
+    const { getByTestId } = render(
+      <CardAcademia {...academia} handleScroll={jest.fn()} />
+    );
+
+    fireEvent.press(getByTestId('card-academia'));
+
+    await apiMock.onPost('checkin').reply(200);
+
+    fireEvent.press(getByTestId('card Musculação + Aulas'));
+
+    const { props } = await waitForElement(() =>
+      getByTestId('icon Musculação + Aulas')
+    );
+
+    expect(props.source).toEqual(check);
   });
 });

@@ -19,15 +19,23 @@ import {
   ListActivities,
   ButtonX,
 } from './styles';
+import api from '../../services/api';
 
 const check = require('../../assets/check.png');
+const notCheck = require('../../assets/not-check.png');
 
 const { width } = Dimensions.get('window');
 
 class CardAcademia extends Component {
   state = {
     moreInfo: false,
+    activities: [],
   };
+
+  componentDidMount() {
+    const { activities } = this.props;
+    this.setState({ activities });
+  }
 
   handleMoreInfo = moreInfo => {
     const { handleScroll } = this.props;
@@ -35,9 +43,26 @@ class CardAcademia extends Component {
     handleScroll(!moreInfo);
   };
 
+  handleCheckin = async (checkin, gymId, activityId) => {
+    const { activities } = this.state;
+    if (checkin) {
+      await api.post('checkin', {
+        gymId,
+        activityId,
+      });
+      const index = activities.findIndex(
+        activity => activity.id === activityId
+      );
+      activities[index].checkin = true;
+
+      this.setState({ activities: [...activities] });
+    }
+  };
+
   render() {
-    const { title, address, rating, logo, activities } = this.props;
-    const { moreInfo } = this.state;
+    const { title, address, rating, logo, id } = this.props;
+    const { moreInfo, activities } = this.state;
+    // console.log(activities);
     return (
       <Container
         onPress={() => this.handleMoreInfo(true)}
@@ -71,9 +96,18 @@ class CardAcademia extends Component {
           <GymMoreInfos>
             <ListActivities horizontal>
               {activities.map(activity => (
-                <CardActivity key={activity.id}>
+                <CardActivity
+                  key={activity.id}
+                  onPress={() =>
+                    this.handleCheckin(!activity.checkin, id, activity.id)
+                  }
+                  testID={`card ${activity.title}`}
+                >
                   <Activity>{activity.title}</Activity>
-                  <IconCheckin source={check} />
+                  <IconCheckin
+                    source={activity.checkin ? check : notCheck}
+                    testID={`icon ${activity.title}`}
+                  />
                 </CardActivity>
               ))}
             </ListActivities>
@@ -95,6 +129,7 @@ CardAcademia.propTypes = {
   logo: PropTypes.string.isRequired,
   activities: PropTypes.array.isRequired,
   handleScroll: PropTypes.func.isRequired,
+  id: PropTypes.number.isRequired,
 };
 
 export default CardAcademia;
