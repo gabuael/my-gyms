@@ -44,14 +44,16 @@ class CardAcademia extends Component {
     const activitiesCheckin = JSON.parse(
       await AsyncStorage.getItem('activitiesCheckin')
     );
-    activitiesCheckin.forEach(activityCheckin => {
-      activities.forEach((activity, index) => {
-        activities[index].gymId = activityCheckin.gymId;
-        if (activityCheckin.id === activity.id) {
-          activities[index].checkin = true;
-        }
+    if (activitiesCheckin) {
+      activitiesCheckin.forEach(activityCheckin => {
+        activities.forEach((activity, index) => {
+          activities[index].gymId = activityCheckin.gymId;
+          if (activityCheckin.id === activity.id) {
+            activities[index].checkin = true;
+          }
+        });
       });
-    });
+    }
 
     this.setState({ activities });
   };

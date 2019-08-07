@@ -56,13 +56,15 @@ export default class Home extends Component {
     const activitiesCheckin = JSON.parse(
       await AsyncStorage.getItem('activitiesCheckin')
     );
-    activitiesCheckin.forEach(activityCheckin => {
-      response.data.forEach((gym, index) => {
-        if (activityCheckin.gymId === gym.id) {
-          response.data[index].checkin = true;
-        }
+    if (activitiesCheckin) {
+      activitiesCheckin.forEach(activityCheckin => {
+        response.data.forEach((gym, index) => {
+          if (activityCheckin.gymId === gym.id) {
+            response.data[index].checkin = true;
+          }
+        });
       });
-    });
+    }
 
     this.setState({
       gyms: response.data,
