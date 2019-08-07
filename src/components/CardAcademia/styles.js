@@ -1,6 +1,8 @@
 import styled from 'styled-components/native';
 
-export const Container = styled.TouchableOpacity`
+export const Container = styled.TouchableHighlight.attrs({
+  underlayColor: '#fff',
+})`
   padding: 17px;
   background: #fff;
   border-radius: 10px;

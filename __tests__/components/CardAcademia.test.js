@@ -74,7 +74,11 @@ afterEach(cleanup);
 describe('CardAcademia', () => {
   it('Render activities', () => {
     const { getByTestId, getByText } = render(
-      <CardAcademia {...academia} handleScroll={jest.fn()} />
+      <CardAcademia
+        {...academia}
+        handleScroll={jest.fn()}
+        setGymsCheckin={jest.fn()}
+      />
     );
 
     fireEvent.press(getByTestId('card-academia'));
@@ -84,7 +88,11 @@ describe('CardAcademia', () => {
 
   it('Close activities', () => {
     const { getByTestId } = render(
-      <CardAcademia {...academia} handleScroll={jest.fn()} />
+      <CardAcademia
+        {...academia}
+        handleScroll={jest.fn()}
+        setGymsCheckin={jest.fn()}
+      />
     );
 
     fireEvent.press(getByTestId('card-academia'));
@@ -95,7 +103,11 @@ describe('CardAcademia', () => {
 
   it('Checkin activity', async () => {
     const { getByTestId } = render(
-      <CardAcademia {...academia} handleScroll={jest.fn()} />
+      <CardAcademia
+        {...academia}
+        handleScroll={jest.fn()}
+        setGymsCheckin={jest.fn()}
+      />
     );
 
     fireEvent.press(getByTestId('card-academia'));
@@ -125,7 +137,11 @@ describe('CardAcademia', () => {
   it('Remove checkin activity', async () => {
     academia.activities[0].check = true;
     const { getByTestId } = render(
-      <CardAcademia {...academia} handleScroll={jest.fn()} />
+      <CardAcademia
+        {...academia}
+        handleScroll={jest.fn()}
+        setGymsCheckin={jest.fn()}
+      />
     );
 
     fireEvent.press(getByTestId('card-academia'));

@@ -35,9 +35,26 @@ class CardAcademia extends Component {
   };
 
   componentDidMount() {
-    const { activities } = this.props;
-    this.setState({ activities });
+    this.getActivitiesCheckin();
   }
+
+  getActivitiesCheckin = async () => {
+    const { activities } = this.props;
+
+    const activitiesCheckin = JSON.parse(
+      await AsyncStorage.getItem('activitiesCheckin')
+    );
+    activitiesCheckin.forEach(activityCheckin => {
+      activities.forEach((activity, index) => {
+        activities[index].gymId = activityCheckin.gymId;
+        if (activityCheckin.id === activity.id) {
+          activities[index].checkin = true;
+        }
+      });
+    });
+
+    this.setState({ activities });
+  };
 
   handleMoreInfo = moreInfo => {
     const { handleScroll } = this.props;
@@ -47,6 +64,7 @@ class CardAcademia extends Component {
 
   handleCheckout = async (gymId, activityId) => {
     const { activities } = this.state;
+    const { setGymsCheckin } = this.props;
     const index = activities.findIndex(activity => activity.id === activityId);
     activities[index].gymId = gymId;
     activities[index].checkin = false;
@@ -66,10 +84,12 @@ class CardAcademia extends Component {
       JSON.stringify(activitiesCheckin)
     );
     this.setState({ activities: [...activities] });
+    setGymsCheckin();
   };
 
   handleCheckin = async (gymId, activityId) => {
     const { activities } = this.state;
+    const { setGymsCheckin } = this.props;
     const index = activities.findIndex(activity => activity.id === activityId);
     await api.post('checkin', {
       gymId,
@@ -89,10 +109,11 @@ class CardAcademia extends Component {
 
     activities[index].checkin = true;
     this.setState({ activities: [...activities] });
+    setGymsCheckin();
   };
 
   render() {
-    const { title, address, rating, logo, id } = this.props;
+    const { title, address, rating, logo, id, checkin } = this.props;
     const { moreInfo, activities } = this.state;
     return (
       <Container
@@ -101,61 +122,67 @@ class CardAcademia extends Component {
         style={{ width: Math.round(width * 0.9) }}
         disabled={moreInfo}
       >
-        <GymInfos>
-          <Left>
-            <Avatar source={{ url: logo }} />
-            <Infos>
-              <Title>{title}</Title>
-              <Address>{address}</Address>
-            </Infos>
-          </Left>
-          <Right>
-            {!moreInfo ? (
-              <IconCheckin source={check} />
-            ) : (
-              <ButtonX onPress={() => this.handleMoreInfo(false)} testID="x">
-                <Icon name="x" size={20} color="#0094FF" />
-              </ButtonX>
-            )}
-            {!moreInfo && (
-              <Rating testID="rating">
+        <>
+          <GymInfos>
+            <Left>
+              <Avatar source={{ url: logo }} />
+              <Infos>
+                <Title>{title}</Title>
+                <Address>{address}</Address>
+              </Infos>
+            </Left>
+            <Right>
+              {!moreInfo ? (
+                <IconCheckin source={checkin ? check : notCheck} />
+              ) : (
+                <ButtonX onPress={() => this.handleMoreInfo(false)} testID="x">
+                  <Icon name="x" size={20} color="#0094FF" />
+                </ButtonX>
+              )}
+              {!moreInfo && (
+                <Rating testID="rating">
+                  <RatingText>{rating}</RatingText>
+                  <Icon name="star" size={16} color="#0094FF" />
+                </Rating>
+              )}
+            </Right>
+          </GymInfos>
+          {moreInfo && (
+            <GymMoreInfos>
+              <ListActivities horizontal>
+                {activities.map(activity => (
+                  <CardActivity
+                    key={activity.id}
+                    onPress={() =>
+                      !activity.checkin
+                        ? this.handleCheckin(id, activity.id)
+                        : this.handleCheckout(id, activity.id)
+                    }
+                    testID={`card ${activity.title}`}
+                  >
+                    <Activity>{activity.title}</Activity>
+                    <IconCheckin
+                      source={activity.checkin ? check : notCheck}
+                      testID={`icon ${activity.title}`}
+                    />
+                  </CardActivity>
+                ))}
+              </ListActivities>
+              <Rating>
                 <RatingText>{rating}</RatingText>
                 <Icon name="star" size={16} color="#0094FF" />
               </Rating>
-            )}
-          </Right>
-        </GymInfos>
-        {moreInfo && (
-          <GymMoreInfos>
-            <ListActivities horizontal>
-              {activities.map(activity => (
-                <CardActivity
-                  key={activity.id}
-                  onPress={() =>
-                    !activity.checkin
-                      ? this.handleCheckin(id, activity.id)
-                      : this.handleCheckout(id, activity.id)
-                  }
-                  testID={`card ${activity.title}`}
-                >
-                  <Activity>{activity.title}</Activity>
-                  <IconCheckin
-                    source={activity.checkin ? check : notCheck}
-                    testID={`icon ${activity.title}`}
-                  />
-                </CardActivity>
-              ))}
-            </ListActivities>
-            <Rating>
-              <RatingText>{rating}</RatingText>
-              <Icon name="star" size={16} color="#0094FF" />
-            </Rating>
-          </GymMoreInfos>
-        )}
+            </GymMoreInfos>
+          )}
+        </>
       </Container>
     );
   }
 }
+
+CardAcademia.defaultProps = {
+  checkin: false,
+};
 
 CardAcademia.propTypes = {
   title: PropTypes.string.isRequired,
@@ -165,6 +192,8 @@ CardAcademia.propTypes = {
   activities: PropTypes.array.isRequired,
   handleScroll: PropTypes.func.isRequired,
   id: PropTypes.number.isRequired,
+  checkin: PropTypes.bool,
+  setGymsCheckin: PropTypes.func.isRequired,
 };
 
 export default CardAcademia;
